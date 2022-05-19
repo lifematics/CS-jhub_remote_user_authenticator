@@ -9,15 +9,17 @@ from tornado import gen, web
 from traitlets import Unicode, Bool, List
 from .utils import normalize_quoted_printable
 
+DEFAULT_ALLOWED_PATTERNS = [r'^.*\.(ac|go)\.jp$', r'^.*\@(.+\.)?waseda\.jp$', r'^.*\@(.+\.)?hro\.or\.jp$']
 
 def check_valid_organization(headers, allowed_patterns):
     eppn = headers.get('Eppn', None)
     mail = headers.get('Mail', None)
-    print(allowed_patterns)
     if eppn is None:
         return False
     if eppn.endswith('@openidp.nii.ac.jp'):
         if mail is None:
+            return False
+        if not re.match(r'^[^\"@\s]+?@([^\"@\s]+?)+$', mail):
             return False
         for pattern in allowed_patterns:
             if re.match(pattern, mail):
@@ -99,7 +101,7 @@ class RemoteUserAuthenticator(Authenticator):
     List of allowed domains for OpenIdP
     """
     allowed_patterns = List(
-        default_value=[r'^.*\.(ac|go)\.jp$', r'^.*\@(.+\.)?waseda\.jp$'],
+        default_value=DEFAULT_ALLOWED_PATTERNS,
         config=True,
         help="""The list of domains to be allowed access from OpenIdP""")
 
@@ -171,7 +173,7 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         help="""Whether to allow any organizations""")
 
     allowed_patterns = List(
-        default_value=[r'^.*\.(ac|go)\.jp$', r'^.*\@(.+\.)?waseda\.jp$'],
+        default_value=DEFAULT_ALLOWED_PATTERNS,
         config=True,
         help="""The list of domains to be allowed access from OpenIdP""")
 
