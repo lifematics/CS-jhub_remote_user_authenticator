@@ -82,7 +82,7 @@ def test_valid_organization(authclass):
         'Mail': 'sample@sample@test.hro.or.jp',
     })
 
-    auth.allowed_patterns = [r'^.*\@(.+\.)?newdomain\.jp$']
+    auth.openidp_allow_patterns = [r'^.*\@(.+\.)?newdomain\.jp$']
     assert not auth.check_valid_organization({})
     assert not auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',

@@ -11,7 +11,7 @@ from .utils import normalize_quoted_printable
 
 DEFAULT_ALLOWED_PATTERNS = [r'^.*\.(ac|go)\.jp$', r'^.*\@(.+\.)?waseda\.jp$', r'^.*\@(.+\.)?hro\.or\.jp$']
 
-def check_valid_organization(headers, allowed_patterns):
+def check_valid_organization(headers, openidp_allow_patterns):
     eppn = headers.get('Eppn', None)
     mail = headers.get('Mail', None)
     if eppn is None:
@@ -21,7 +21,7 @@ def check_valid_organization(headers, allowed_patterns):
             return False
         if not re.match(r'^[^\"@\s]+?@([^\"@\s]+?)+$', mail):
             return False
-        for pattern in allowed_patterns:
+        for pattern in openidp_allow_patterns:
             if re.match(pattern, mail):
                 break
         else:
@@ -36,7 +36,7 @@ class RemoteUserLoginHandler(BaseHandler):
         remote_user = self.request.headers.get(header_name, "")
         if remote_user == "":
             raise web.HTTPError(401)
-        if not self.authenticator.check_valid_organization(self.request.headers, self.authenticator.allowed_patterns):
+        if not self.authenticator.check_valid_organization(self.request.headers, self.authenticator.openidp_allow_patterns):
             raise web.HTTPError(401)
         if self.authenticator.use_quoted_printable_normalization:
             remote_user = normalize_quoted_printable(remote_user)
@@ -100,7 +100,7 @@ class RemoteUserAuthenticator(Authenticator):
     """
     List of allowed domains for OpenIdP
     """
-    allowed_patterns = List(
+    openidp_allow_patterns = List(
         default_value=DEFAULT_ALLOWED_PATTERNS,
         config=True,
         help="""The list of domains to be allowed access from OpenIdP""")
@@ -126,7 +126,7 @@ class RemoteUserAuthenticator(Authenticator):
         self.log.debug("Eppn: {}".format(headers.get('Eppn', '(None)')))
         self.log.debug("Affiliation: {}".format(headers.get('Affiliation', '(None)')))
         self.log.debug("Mail: {}".format(headers.get('Mail', '(None)')))
-        return check_valid_organization(headers, self.allowed_patterns)
+        return check_valid_organization(headers, self.openidp_allow_patterns)
 
 
 class RemoteUserLocalAuthenticator(LocalAuthenticator):
@@ -172,7 +172,7 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         config=True,
         help="""Whether to allow any organizations""")
 
-    allowed_patterns = List(
+    openidp_allow_patterns = List(
         default_value=DEFAULT_ALLOWED_PATTERNS,
         config=True,
         help="""The list of domains to be allowed access from OpenIdP""")
@@ -198,4 +198,4 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         self.log.debug("Eppn: {}".format(headers.get('Eppn', '(None)')))
         self.log.debug("Affiliation: {}".format(headers.get('Affiliation', '(None)')))
         self.log.debug("Mail: {}".format(headers.get('Mail', '(None)')))
-        return check_valid_organization(headers, self.allowed_patterns)
+        return check_valid_organization(headers, self.openidp_allow_patterns)
