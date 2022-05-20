@@ -59,10 +59,6 @@ def test_valid_organization(authclass):
     })
     assert not auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'test@"dangerous---domain---".waseda.jp',
-    })
-    assert not auth.check_valid_organization({
-        'Eppn': 'testtest@openidp.nii.ac.jp',
         'Mail': 'not@valid@test.go.jp',
     })
     assert not auth.check_valid_organization({

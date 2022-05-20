@@ -9,7 +9,7 @@ from tornado import gen, web
 from traitlets import Unicode, Bool, List
 from .utils import normalize_quoted_printable
 
-DEFAULT_ALLOWED_PATTERNS = [r'^.*\.(ac|go)\.jp$', r'^.*\@(.+\.)?waseda\.jp$', r'^.*\@(.+\.)?hro\.or\.jp$']
+DEFAULT_ALLOWED_PATTERNS = [r'^.+\.(ac|go)\.jp$', r'^.+[@.]waseda\.jp$', r'^.+[@.]hro\.or\.jp$']
 
 def check_valid_organization(headers, openidp_allow_patterns):
     eppn = headers.get('Eppn', None)
@@ -19,7 +19,7 @@ def check_valid_organization(headers, openidp_allow_patterns):
     if eppn.endswith('@openidp.nii.ac.jp'):
         if mail is None:
             return False
-        if not re.match(r'^[^\"@\s]+?@([^\"@\s]+?)+$', mail):
+        if not re.match(r'^[^\"@\s]+?@[^@]+$', mail):
             return False
         for pattern in openidp_allow_patterns:
             if re.match(pattern, mail):
