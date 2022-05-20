@@ -9,8 +9,6 @@ from tornado import gen, web
 from traitlets import Unicode, Bool, List
 from .utils import normalize_quoted_printable
 
-DEFAULT_ALLOWED_PATTERNS = [r'^.+\.(ac|go)\.jp$', r'^.+[@.]waseda\.jp$', r'^.+[@.]hro\.or\.jp$']
-
 def check_valid_organization(headers, openidp_allow_patterns):
     eppn = headers.get('Eppn', None)
     mail = headers.get('Mail', None)
@@ -101,7 +99,7 @@ class RemoteUserAuthenticator(Authenticator):
     List of allowed domains for OpenIdP
     """
     openidp_allow_patterns = List(
-        default_value=DEFAULT_ALLOWED_PATTERNS,
+        default_value=[],
         config=True,
         help="""The list of domains to be allowed access from OpenIdP""")
 
@@ -173,7 +171,7 @@ class RemoteUserLocalAuthenticator(LocalAuthenticator):
         help="""Whether to allow any organizations""")
 
     openidp_allow_patterns = List(
-        default_value=DEFAULT_ALLOWED_PATTERNS,
+        default_value=[],
         config=True,
         help="""The list of domains to be allowed access from OpenIdP""")
 

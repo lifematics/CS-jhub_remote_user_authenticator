@@ -7,6 +7,7 @@ from jhub_remote_user_authenticator import remote_user_auth
                           remote_user_auth.RemoteUserLocalAuthenticator])
 def test_valid_organization(authclass):
     auth = authclass()
+    auth.openidp_allow_patterns = [r'^.+\.(ac|go)\.jp$', r'^.+[@.]domain1\.jp$']
     assert not auth.check_valid_organization({})
     assert not auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
@@ -43,19 +44,19 @@ def test_valid_organization(authclass):
     })
     assert auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'test@waseda.jp',
+        'Mail': 'test@domain1.jp',
     })
     assert auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'test@test.waseda.jp',
+        'Mail': 'test@test.domain1.jp',
     })
     assert not auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'test@test@test.waseda.jp',
+        'Mail': 'test@test@test.domain1.jp',
     })
     assert not auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': '"dangerous-local://part////."@test.waseda.jp',
+        'Mail': '"dangerous-local://part////."@test.domain1.jp',
     })
     assert not auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
@@ -64,18 +65,6 @@ def test_valid_organization(authclass):
     assert not auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
         'Mail': '"dangerous-localpart"@test.go.jp',
-    })
-    assert auth.check_valid_organization({
-        'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'sample@hro.or.jp',
-    })
-    assert auth.check_valid_organization({
-        'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'sample@test.hro.or.jp',
-    })
-    assert not auth.check_valid_organization({
-        'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'sample@sample@test.hro.or.jp',
     })
 
     auth.openidp_allow_patterns = [r'^.*\@(.+\.)?newdomain\.jp$']
@@ -115,7 +104,7 @@ def test_valid_organization(authclass):
     })
     assert not auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'test@waseda.jp',
+        'Mail': 'test@domain1.jp',
     })
     assert auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
@@ -171,9 +160,9 @@ def test_valid_organization(authclass):
     })
     assert auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'test@waseda.jp',
+        'Mail': 'test@domain1.jp',
     })
     assert auth.check_valid_organization({
         'Eppn': 'testtest@openidp.nii.ac.jp',
-        'Mail': 'test@test.waseda.jp',
+        'Mail': 'test@test.domain1.jp',
     })
