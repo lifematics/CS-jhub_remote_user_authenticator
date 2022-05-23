@@ -34,7 +34,7 @@ class RemoteUserLoginHandler(BaseHandler):
         remote_user = self.request.headers.get(header_name, "")
         if remote_user == "":
             raise web.HTTPError(401)
-        if not self.authenticator.check_valid_organization(self.request.headers, self.authenticator.openidp_allow_patterns):
+        if not self.authenticator.check_valid_organization(self.request.headers):
             raise web.HTTPError(401)
         if self.authenticator.use_quoted_printable_normalization:
             remote_user = normalize_quoted_printable(remote_user)
